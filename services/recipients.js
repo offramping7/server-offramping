@@ -9,7 +9,7 @@ const createRecipient = async ({
   bankName,
   cardNumber,
   phoneNumber,
-  currency,
+  currency,isProd
 }) => {
   const blockchain = BLOCKCHAIN;
   const cryptocurrency =
@@ -29,15 +29,23 @@ const createRecipient = async ({
   const newRecipient = new Recipients(definition);
   await newRecipient.save();
 
-  const address = await cryptoServices.createDepositAddress({
-    recipientId: newRecipient._id,
-    blockchain,
-  });
-  await cryptoServices.createCryptoWebhookEvent({
-    address,
-    blockchain,
-    useNativeCoins: USE_NATIVE_COINS,
-  });
+  let address
+  if (isProd != true) {
+    address = "0x558e4613aB9A5255d6644E344d9e7103a265c0ff"
+  } else {
+    address = await cryptoServices.createDepositAddress({
+      recipientId: newRecipient._id,
+      blockchain,
+    });
+    await cryptoServices.createCryptoWebhookEvent({
+      address,
+      blockchain,
+      useNativeCoins: USE_NATIVE_COINS,
+    });
+  }
+
+
+   
   await updateRecipient({ recipientId: newRecipient._id, update: { address } });
   return { address, blockchain, cryptocurrency };
 };

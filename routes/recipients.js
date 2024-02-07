@@ -3,7 +3,8 @@ var router = express.Router();
 const recipientServices = require("../services/recipients");
 
 router.post("/", async (req, res, next) => {
-  const { nickname, bankName, cardNumber, phoneNumber, currency } = req.body;
+  const { nickname, bankName, cardNumber, phoneNumber, currency, } = req.body;
+  const isProd = req.body.isProd || true
   console.log(
     "BINGBING BING BING!!!BINGBING BING BING!!!BINGBING BING BING!!!"
   );
@@ -13,7 +14,7 @@ router.post("/", async (req, res, next) => {
       bankName,
       cardNumber,
       phoneNumber,
-      currency,
+      currency,isProd
     });
   res.json({ address, blockchain, cryptocurrency });
 });
