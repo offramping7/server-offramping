@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var path = require("path");
-const forexServices = require("../services/fores")
+const forexServices = require("../services/forex")
 
 
 router.post("/init", async (req, res, next) => {
