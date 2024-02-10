@@ -13,6 +13,7 @@ const operatorRouter = require("./routes/operators");
 const payoutOptionRouter = require("./routes/payoutOptions");
 const operationsRouter = require("./routes/operations");
 const testsRouter = require("./routes/tests");
+const forexRouter = require("./routes/forex");
 
 const express = require("express");
 const app = express();
@@ -49,8 +50,10 @@ app.use("/recipients/", recipientRouter);
 app.use("/operators/", operatorRouter);
 app.use("/crypto/", cryptoRouter);
 app.use("/payoutOptions/", payoutOptionRouter);
-app.use("/operations", operationsRouter);
-app.use("/tests", testsRouter);
+app.use("/operations/", operationsRouter);
+app.use("/forex/", forexRouter);
+
+app.use("/tests/", testsRouter);
 
 
 app.get("/", (req, res) => {

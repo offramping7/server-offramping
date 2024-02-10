@@ -1,34 +1,38 @@
 const coinmarketcapApi = require("../api/coinmarketcap");
 const forexApi = require("../api/forex");
-const { OUR_FEE } = require("../settings/fees");
+const Users = require("../models/users")
+const Forex = require("../models/forex")
+
+const { OUR_FEE,INDIRIM } = require("../settings/fees");
 
 const convertToRecipientAmountExactly = async ({
   cryptoValue,
   cryptocurrency,
-  recipientCurrency,
+  recipient,
 }) => {
   //assume that the fee was 0.03?
+
+  //check if first for userEmail
+  const {userEmail} = recipient
+  const {active} = await Users.findOne({userEmail})
+
+  //
+
+  const TOTAL_FEE = active ? OUR_FEE : OUR_FEE-INDIRIM
+
+
   const cryptoPrice = await coinmarketcapApi.fetchPrice({ cryptocurrency });
-  const usdtFromCryptoPreTxFee = cryptoValue / cryptoPrice;
-  const usdtFromCryptoPostTxFee = usdtFromCryptoPreTxFee + 0.03;
-  const usdtUser = usdtFromCryptoPostTxFee * (1 - OUR_FEE);
-  const usdValueInRecipientCurrency = await forexApi.fetchUsdToCurrency({
-    currency: recipientCurrency,
+  const usdtFromCrypto = cryptoValue / cryptoPrice;
+  const usdtUser = usdtFromCrypto * (1 - TOTAL_FEE);
+  const {dollarValue} = await Forex.findOne({
+    currency: recipient.currency,
   });
 
-  const recipientAmount = usdtUser * usdValueInRecipientCurrency;
+  const recipientAmount = usdtUser * dollarValue;
   return recipientAmount;
 };
 
-const convertToRecipientAmountFake = async ({
-  cryptoValue,
-  cryptocurrency,
-  recipientCurrency,
-}) => {
-  const recipientAmount = 100;
-  return recipientAmount;
-};
 module.exports = {
   convertToRecipientAmountExactly,
-  convertToRecipientAmountFake,
+
 };

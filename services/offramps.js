@@ -1,6 +1,8 @@
 const recipientServices = require("./recipients");
 const dicordServices = require("./discord");
 const Offramps = require("../models/offramps");
+const Users = require("../models/users")
+
 const cryptoServices = require("./crypto");
 const { THIS_SERVER_URL } = require("../settings/baseUrls");
 const cryptoApi = require("../api/cryptoApi");
@@ -47,13 +49,14 @@ const serviceOfframp = async ({ address, payload }) => {
   console.log("myRecipient", myRecipient);
   const cryptoValue = amount;
 
-  const recipientAmount = await conversionServices.convertToRecipientAmountFake(
+  const recipientAmount = await conversionServices.convertToRecipientAmountExactly(
     {
       cryptocurrency: cryptocurrencyFromBlockchain[blockchain].coin,
-      recipientCurrency: myRecipient.currency,
       cryptoValue: amount,
+      recipient: myRecipient,
+
     }
-  );
+  );//inside here we will also mark off discount or not
 
   const definition = {
     recipient: myRecipient._id,
@@ -97,6 +100,8 @@ const serviceOfframp = async ({ address, payload }) => {
     cryptoAmount: cryptoValueForHtx.toFixed(5).toString(),
     offrampId: newOfframp._id,
   });
+
+  await Users.findOneAndUpdate({email:myRecipient.userEmail},{active:true})
   return;
 };
 

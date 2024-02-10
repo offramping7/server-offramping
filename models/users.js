@@ -1,26 +1,18 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const recipientsSchema = new Schema(
+const usersSchema = new Schema(
   {
-    address: String,
-    nickname: String,
-    blockchain: String,
-    cryptocurrency: String,
-    bankName: String,
-    cardNumber: String || null,
-    phoneNumber: String,
-    currency: String,
+    active: {type:Boolean,default:false},
     email: String,
-    userEmail:String,
   },
   {
-    collection: "recipients",
+    collection: "users",
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model("Recipients", recipientsSchema);
+module.exports = mongoose.model("Users", usersSchema);
 //use the default blockchain of bsc etc here, one blockchain per one recipient
 //BUT if there is real need to use TRON, then use migrate_address_to_another_blockchain endpoint request
 

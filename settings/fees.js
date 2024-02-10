@@ -1,2 +1,3 @@
 const OUR_FEE = 0.06;
-module.exports = { OUR_FEE };
+const INDIRIM = 0.04
+module.exports = { OUR_FEE,INDIRIM };
