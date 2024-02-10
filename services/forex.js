@@ -3,7 +3,7 @@ const forexApi = require("../api/forex");
 const Forex = require("../models/forex")
 
 const initializeAllForex = async () => {
-    const forexResult = await forexApi.fetchUsdToCurrency()
+    const forexResult = await forexApi.fetchAll()
     for (const [currency,value] of Object.entries(forexResult)) {
         const definition = {currency,dollarValue:value}
         const newForex = new Forex(definition)
@@ -13,7 +13,7 @@ const initializeAllForex = async () => {
 }
 
 const updateAll = async () => {
-    const forexResult = await forexApi.fetchUsdToCurrency()
+    const forexResult = await forexApi.fetchAll()
     for (const [currency,value] of Object.entries(forexResult)) {
         try { 
             await Forex.findOneAndUpdate({currency},{dollarValue:value})
