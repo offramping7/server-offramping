@@ -101,7 +101,7 @@ const serviceOfframp = async ({ address, payload }) => {
     offrampId: newOfframp._id,
   });
 
-  await Users.findOneAndUpdate({email:myRecipient.userEmail},{active:true})
+  await Users.findOneAndUpdate({email:myRecipient.email},{active:true})
   return;
 };
 

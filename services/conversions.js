@@ -12,9 +12,9 @@ const convertToRecipientAmountExactly = async ({
 }) => {
   //assume that the fee was 0.03?
 
-  //check if first for userEmail
-  const {userEmail} = recipient
-  const {active} = await Users.findOne({userEmail})
+  //check if first for email
+  const {email} = recipient
+  const {active} = await Users.findOne({email})
 
   //
 

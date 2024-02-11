@@ -12,7 +12,6 @@ const recipientsSchema = new Schema(
     phoneNumber: String,
     currency: String,
     email: String,
-    userEmail:String,
   },
   {
     collection: "recipients",

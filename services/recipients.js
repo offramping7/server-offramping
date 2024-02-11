@@ -25,7 +25,7 @@ const createRecipient = async ({
     phoneNumber,
     currency,
     blockchain,
-    cryptocurrency,userEmail:email
+    cryptocurrency,email:email
   };
   const newRecipient = new Recipients(definition);
   await newRecipient.save();
