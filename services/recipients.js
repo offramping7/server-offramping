@@ -67,7 +67,7 @@ module.exports = { createRecipient, fetchRecipientByAddress };
 
 const createUser = async ({email}) => {
   const definition = {
-    email,active
+    email,active:false
   }
   const newUser = new Users(definition)
   await newUser.save()
