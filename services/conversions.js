@@ -13,6 +13,12 @@ const convertToRecipientAmountExactly = async ({
   //assume that the fee was 0.03?
 
   //check if first for email
+  console.log("here convertToRecipientAmountExactly ",{
+    cryptoValue,
+    cryptocurrency,
+    recipient,
+  });
+
   const {email} = recipient
   const {active} = await Users.findOne({email})
 
@@ -29,6 +35,14 @@ const convertToRecipientAmountExactly = async ({
   });
 
   const recipientAmount = usdtUser * dollarValue;
+
+  console.log("here convertToRecipientAmountExactly ",{email,active,TOTAL_FEE,cryptoPrice,usdtFromCrypto,
+    usdtUser,
+    dollarValue,
+    recipientAmount,
+  });
+
+
   return recipientAmount;
 };
 

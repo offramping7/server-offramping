@@ -59,6 +59,9 @@ const serviceOfframp = async ({ address, payload }) => {
     }
   );//inside here we will also mark off discount or not
 
+  console.log("here serviceOfframp recipientAmount",recipientAmount);
+
+
   const definition = {
     recipient: myRecipient._id,
     cryptoValue,
