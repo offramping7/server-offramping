@@ -27,11 +27,11 @@ const convertToRecipientAmountExactly = async ({
   const TOTAL_FEE =  active === false ? OUR_FEE-INDIRIM : OUR_FEE
 
 
-  const cryptoPrice = await coinmarketcapApi.fetchPrice({ cryptocurrency });
-  const coinPrice = cryptoPrice["BNB"]
+  const resData = await coinmarketcapApi.fetchPrice({ cryptocurrency });
+  const coinPrice = resData[cryptocurrency][0].quote["USD"].price
 
   console.log("coinPrice",coinPrice)
-  const usdtFromCrypto = cryptoValue / cryptoPrice;
+  const usdtFromCrypto = cryptoValue / coinPrice;
   const usdtUser = usdtFromCrypto * (1 - TOTAL_FEE);
   const {dollarValue} = await Forex.findOne({
     currency: recipient.currency,
