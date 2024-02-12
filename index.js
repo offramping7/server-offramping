@@ -8,7 +8,7 @@ require("dotenv").config()
 const indexRouter = require("./routes/index");
 const offrampRouter = require("./routes/offramps");
 const recipientRouter = require("./routes/recipients");
-const cryptoRouter = require("./routes/crypto");
+
 const operatorRouter = require("./routes/operators");
 const payoutOptionRouter = require("./routes/payoutOptions");
 const operationsRouter = require("./routes/operations");
@@ -48,7 +48,6 @@ app.use("/", indexRouter);
 app.use("/offramps/", offrampRouter);
 app.use("/recipients/", recipientRouter);
 app.use("/operators/", operatorRouter);
-app.use("/crypto/", cryptoRouter);
 app.use("/payoutOptions/", payoutOptionRouter);
 app.use("/operations/", operationsRouter);
 app.use("/forex/", forexRouter);
