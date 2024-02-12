@@ -1,25 +1,25 @@
 const discordApi = require("../api/discord");
 
-const notifyServiceOfframp = async ({ recipient, cryptoAmount, offrampId }) => {
+const notifyServiceOfframp = async ({ recipient, recipientAmount, offrampId }) => {
   const { nickname, bankName, cardNumber, phoneNumber, currency } = recipient;
 
   const embeds = [
     {
-      title: "New Offramp Request!",
-      description: `offrampId : ${offrampId}`,
+      title: "Новый Клиент!",
+      description: `Наш Системный ID для этого перевода: ${offrampId}`,
       fields: [
         {
-          name: "Currency",
+          name: "Валюта для получения",
           value: `${currency}`,
           inline: true,
         },
         {
-          name: "USDT amount",
-          value: `${cryptoAmount}`,
+          name: "Сумма для получения",
+          value: `${recipientAmount}`,
           inline: true,
         },
         {
-          name: "Name",
+          name: "Имя",
           value: `${nickname}`,
           inline: true,
         },
@@ -29,19 +29,18 @@ const notifyServiceOfframp = async ({ recipient, cryptoAmount, offrampId }) => {
           inline: true,
         },
         {
-          name: "Card Info",
+          name: "Номер Карты",
           value: `card: ${cardNumber}`,
         },
         {
-          name: "Phone Number",
+          name: "Телефон",
           value: `phone: ${phoneNumber}`,
         },
         
       ],
     },
   ];
-  const channel = "client";
-  await discordApi.ping({ embeds, channel });
+  await discordApi.ping({ embeds });
   return;
 };
 

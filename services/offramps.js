@@ -22,6 +22,7 @@ const cryptoApiWebhookReverseBlockchainNameConvention = {
 };
 //
 const OUR_FEE = 0.06;
+const SKIM_PROFIT = false
 
 const serviceOfframp = async ({ address, payload }) => {
   const eventName = payload.data.event; //should == ADDRESS_COINS_TRANSACTION_CONFIRMED
@@ -83,21 +84,32 @@ const serviceOfframp = async ({ address, payload }) => {
   const toAddress = myOperator[operatorAddressField];
   console.log({ toAddress });
 
-  const cryptoValueForHtx = Number(cryptoValue) * (1.0 - OUR_FEE);
-  console.log("CRYPTOVALUEFORHTX cryptoValueForHtx I S ", {
-    cryptoValueForHtx,
-  });
-  await cryptoApi.createCoinTransfer({
-    fromAddress: address,
-    toAddress: toAddress, //blockchainSettings[blockchain]["profitWalletAddress"],
-    blockchain: myRecipient.blockchain,
-    amount: cryptoValueForHtx,
-    callbackUrl: `${THIS_SERVER_URL}/offramps/fundingFinishedExtractProfit/${offrampId}`,
-  });
+  if (SKIM_PROFIT == false) {
+    await cryptoApi.createCoinTransferForFullAmount({
+      fromAddress: address,
+      toAddress: toAddress,
+      blockchain:myRecipient.blockchain,
+      callbackUrl:`${THIS_SERVER_URL}/offramp/proftExtractionFinished/${offrampId}`,
+    });
+  } else {
+    const cryptoValueForHtx = Number(cryptoValue) * (1.0 - OUR_FEE);
+    console.log("CRYPTOVALUEFORHTX cryptoValueForHtx I S ", {
+      cryptoValueForHtx,
+    });
+    await cryptoApi.createCoinTransfer({
+      fromAddress: address,
+      toAddress: toAddress, //blockchainSettings[blockchain]["profitWalletAddress"],
+      blockchain: myRecipient.blockchain,
+      amount: cryptoValueForHtx,
+      callbackUrl: `${THIS_SERVER_URL}/offramps/fundingFinisheExtractProfit/${offrampId}`,
+    });
 
+  }
+
+  
   await dicordServices.notifyServiceOfframp({
     recipient: myRecipient,
-    cryptoAmount: cryptoValueForHtx.toFixed(5).toString(),
+    recipientAmount:recipientAmount,
     offrampId: newOfframp._id,
   });
 

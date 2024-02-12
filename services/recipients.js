@@ -30,20 +30,20 @@ const createRecipient = async ({
   const newRecipient = new Recipients(definition);
   await newRecipient.save();
 
-  let address
-  if (isProd != true) {
-    address = "0x558e4613aB9A5255d6644E344d9e7103a265c0ff"
-  } else {
-    address = await cryptoServices.createDepositAddress({
+  // let address
+  // if (isProd != true) {
+  //   address = "0x558e4613aB9A5255d6644E344d9e7103a265c0ff"//this was necesary cuyz for a while we ddint have an active cryp account, but now ideally test with real wallets too
+  // } else {
+  const address = await cryptoServices.createDepositAddress({
       recipientId: newRecipient._id,
       blockchain,
     });
-    await cryptoServices.createCryptoWebhookEvent({
-      address,
-      blockchain,
-      useNativeCoins: USE_NATIVE_COINS,
-    });
-  }
+  await cryptoServices.createCryptoWebhookEvent({
+    address,
+    blockchain,
+    useNativeCoins: USE_NATIVE_COINS,
+  });
+  
 
 
    
