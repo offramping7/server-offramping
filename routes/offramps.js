@@ -2,6 +2,18 @@ var express = require("express");
 var router = express.Router();
 const offrampServices = require("../services/offramps");
 
+router.get("/", async (req, res, next) => {
+  // const { address } = req.params;
+  // const payload = req.body;
+
+  // if (payload.data.item.callbackSecretKey !== "mugiwara") {
+  //   console.log("no mugiwara..");
+  //   res.sendStatus(200);
+  //   return;
+  // 
+  res.json("ok1");
+});
+
 router.post("/incomingCoinsWebhook/:address", async (req, res, next) => {
   const { address } = req.params;
   const payload = req.body;
