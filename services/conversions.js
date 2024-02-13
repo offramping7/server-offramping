@@ -25,7 +25,7 @@ const convertToRecipientAmountExactly = async ({
   const coinPrice = resData[cryptocurrency][0].quote["USD"].price
 
   console.log("coinPrice",coinPrice)
-  const usdtFromCrypto = cryptoValue / coinPrice;
+  const usdtFromCrypto = cryptoValue * coinPrice;
   const usdtUser = usdtFromCrypto * (1 - TOTAL_FEE);
   const {dollarValue} = await Forex.findOne({
     currency: recipient.currency,
