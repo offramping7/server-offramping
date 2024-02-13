@@ -21,10 +21,10 @@ router.post("/createCoinTransfer", async (req, res, next) => {
 
 router.post("/conversions", async (req, res, next) => {
     const {cryptoValue,
-      cryptocurrency,
+      cryptocurrency,currency,
     active} = req.body; //
     const result = await conversionServices.convertToRecipientAmountExactlyAdvanced({ cryptoValue,
-      cryptocurrency,
+      cryptocurrency,currency,
     active});
     res.json(result);//createDepositAddress
   });//createCoinTransfer
