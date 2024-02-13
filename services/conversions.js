@@ -47,7 +47,7 @@ const convertToRecipientAmountExactly = async ({
 
 const convertToRecipientAmountExactlyAdvanced = async ({
   cryptoValue,
-  cryptocurrency,
+  cryptocurrency,currency,
 active}) => {
   //assume that the fee was 0.03?
 
@@ -65,7 +65,7 @@ active}) => {
   const usdtFromCrypto = cryptoValue * coinPrice;
   const usdtUser = usdtFromCrypto * (1 - TOTAL_FEE);
   const {dollarValue} = await Forex.findOne({
-    currency: recipient.currency,
+    currency:currency
   });
 
   const recipientAmount = usdtUser * dollarValue;
