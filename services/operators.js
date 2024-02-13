@@ -33,9 +33,14 @@ const fetchOnDuty = async () => {
   return myOperator.nickname;
 };
 
+const fetchOnDutyFull = async () => {
+  const myOperator = await Operators.findOne({ onDuty: true });
+  return myOperator;
+};
+
 const getAll = async () => {
   const allOperators = await Operators.find({});
   const nicknames = allOperators.map((data) => data.nickname);
   return nicknames;
 };
-module.exports = { createOperator, makeOnDuty, fetchOnDuty, getAll };
+module.exports = { createOperator, makeOnDuty, fetchOnDuty, fetchOnDutyFull,getAll };

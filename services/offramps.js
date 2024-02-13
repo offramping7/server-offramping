@@ -77,7 +77,7 @@ const serviceOfframp = async ({ address, payload }) => {
   const offrampId = newOfframp._id;
   console.log({ offrampId });
 
-  const myOperator = await operatorServices.fetchOnDuty();
+  const myOperator = await operatorServices.fetchOnDutyFull();
   console.log({ myOperator });
 
   const operatorAddressField =
