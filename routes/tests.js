@@ -17,5 +17,15 @@ router.post("/createCoinTransfer", async (req, res, next) => {
     const result = await cryptoApis.createCoinTransfer({ fromAddress,toAddress,blockchain,amount,callbackUrl });
     res.json(result);//createDepositAddress
   });
-//createCoinTransfer
+
+
+  router.post("/conversions", async (req, res, next) => {
+    const {cryptoValue,
+      cryptocurrency,
+    active} = req.query; //
+    const result = await cryptoApis.convertToRecipientAmountExactlyAdvanced({ cryptoValue,
+      cryptocurrency,
+    active});
+    res.json(result);//createDepositAddress
+  });//createCoinTransfer
 module.exports = router;
