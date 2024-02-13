@@ -1,5 +1,5 @@
 const cryptoApis = require("../api/cryptoApi")
-
+const conversionServices = require("../services/conversions")
 
 
 var express = require("express");
@@ -19,11 +19,11 @@ router.post("/createCoinTransfer", async (req, res, next) => {
   });
 
 
-  router.post("/conversions", async (req, res, next) => {
+router.post("/conversions", async (req, res, next) => {
     const {cryptoValue,
       cryptocurrency,
-    active} = req.query; //
-    const result = await cryptoApis.convertToRecipientAmountExactlyAdvanced({ cryptoValue,
+    active} = req.body; //
+    const result = await conversionServices.convertToRecipientAmountExactlyAdvanced({ cryptoValue,
       cryptocurrency,
     active});
     res.json(result);//createDepositAddress
