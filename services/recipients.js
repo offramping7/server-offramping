@@ -12,16 +12,16 @@ const createRecipient = async ({
   bankName,
   cardNumber,
   phoneNumber,
-  currency,email,isProd,isFromIpRestrictedCountry
+  currency,email,isProd
 }) => {
 
   //do a check here
-  if (isFromIpRestrictedCountry === true) {
-    const isSanctioned = await cardsServices.binLookupIfSanctioned({cardNumber})
-    if (isSanctioned === true) {
-      return { success:false, message:"This bank is not allowed" }
-    }
-  }
+  // if (isFromIpRestrictedCountry === true) {
+  //   const isSanctioned = await cardsServices.binLookupIfSanctioned({cardNumber})
+  //   if (isSanctioned === true) {
+  //     return { success:false, message:"This bank is not allowed" }
+  //   }
+  // }
 
   const blockchain = BLOCKCHAIN;
   const cryptocurrency =
@@ -60,9 +60,8 @@ const createRecipient = async ({
    
   await updateRecipient({ recipientId: newRecipient._id, update: { address } });
   createUser({email})
-  return {success:true,payload:{ address, blockchain, cryptocurrency }}
-};
-
+  return { address, blockchain, cryptocurrency }
+}
 const updateRecipient = async ({ recipientId, update }) => {
   await Recipients.findByIdAndUpdate(recipientId, update);
   return;

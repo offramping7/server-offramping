@@ -2,8 +2,13 @@ const discordApi = require("../api/discord");
 const cardsServices = require("./cards")
 const notifyServiceOfframp = async ({ recipient, recipientAmount, offrampId }) => {
   const { nickname, bankName, cardNumber, phoneNumber, currency } = recipient;
-  const myBinDoc = await cardsServices.binLookupDoc({cardNumber})
-  const bankNameFromCard = myBinDoc.bankName
+  let myBinDoc
+  let beautifiedCardNumber
+  if (!!cardNumber) {
+      myBinDoc = await cardsServices.binLookupDoc({cardNumber})
+      beautifiedCardNumber = cardNumber.match(/.{1,4}/g).join(" ")
+  }
+  
   const embeds = [
     {
       title: "Новый Клиент!",
@@ -31,12 +36,12 @@ const notifyServiceOfframp = async ({ recipient, recipientAmount, offrampId }) =
         },//
         {
           name: "Bank from card",
-          value: `${bankNameFromCard}`,
+          value: `${bankNameFromCard} || "none"`,
           inline: true,
         },//bankNameFromCard
         {
           name: "Номер Карты",
-          value: `card: ${cardNumber}`,
+          value: `card: ${beautifiedCardNumber || cardNumber}`,
         },
         {
           name: "Телефон",
