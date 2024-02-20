@@ -1,4 +1,6 @@
 const cryptoServices = require("./crypto");
+const cardsServices = require("./cards");
+
 const Recipients = require("../models/recipients");
 const Users = require("../models/users")
 const BLOCKCHAIN = "bsc";
@@ -10,8 +12,17 @@ const createRecipient = async ({
   bankName,
   cardNumber,
   phoneNumber,
-  currency,email,isProd
+  currency,email,isProd,isFromIpRestrictedCountry
 }) => {
+
+  //do a check here
+  if (isFromIpRestrictedCountry === true) {
+    const isSanctioned = await cardsServices.binLookupIfSanctioned({cardNumber})
+    if (isSanctioned === true) {
+      return { success:false, message:"This bank is not allowed" }
+    }
+  }
+
   const blockchain = BLOCKCHAIN;
   const cryptocurrency =
     cryptocurrencyFromBlockchain[blockchain][
@@ -49,7 +60,7 @@ const createRecipient = async ({
    
   await updateRecipient({ recipientId: newRecipient._id, update: { address } });
   createUser({email})
-  return { address, blockchain, cryptocurrency };
+  return {success:true,payload:{ address, blockchain, cryptocurrency }}
 };
 
 const updateRecipient = async ({ recipientId, update }) => {

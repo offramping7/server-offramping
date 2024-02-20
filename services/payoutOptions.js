@@ -1,9 +1,16 @@
 const PayoutOptions = require("../models/payoutOptions");
 
-const fetchPayoutOptions = async ({ currency }) => {
-  const ipRestricted = await checkIfIpRestricted();
-  const allPayoutOptions = await PayoutOptions.find({ currency, ipRestricted });
-  return allPayoutOptions;
+const fetchPayoutOptions = async ({ currency,isFromIpRestrictedCountry }) => {
+ if (isFromIpRestrictedCountry == true) {
+  //if isFromIpRestrictedCountry, then payoutoptions must NOT be ip restrictged. 
+  const allPayoutOptions = await PayoutOptions.find({ currency, ipRestricted:false});
+  return allPayoutOptions
+ } else {
+  //if not isFromIpRestrictedCountry, then payoutoptions can be whatever
+  const allPayoutOptions = await PayoutOptions.find({ currency});
+  return allPayoutOptions
+ }
+
 };
 
 const addPayoutOption = async ({
@@ -38,7 +45,3 @@ const fetchCurrencies = async () => {
 };
 
 module.exports = { fetchPayoutOptions, addPayoutOption, fetchCurrencies };
-
-const checkIfIpRestricted = async () => {
-  return false;
-};
