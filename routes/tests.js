@@ -28,4 +28,14 @@ router.post("/conversions", async (req, res, next) => {
     active});
     res.json(result);//createDepositAddress
   });//createCoinTransfer
+
+  router.get("/demofunc", async (req, res, next) => {
+    const ip1 = req.headers['cf-connecting-ip']
+  const ip2=      req.headers['x-real-ip']
+  const ip3=      req.headers['x-forwarded-for']
+  const ip4=  req.connection.remoteAddress
+    res.json({ip1,ip2,ip3,ip4});//createDepositAddress
+  });//createCoinTransfer
+
+
 module.exports = router;
