@@ -6,7 +6,7 @@ const binLookupDoc = async ({cardNumber}) => {
         return null
     }
     const thisBinCode = cardNumber.replace(/\s/g, '').slice(0,6)
-    const myBinCodeDoc = await BinCodes.findOne({thisBinCode}).populate("payoutOption")
+    const myBinCodeDoc = await BinCodes.findOne({binNumber:thisBinCode}).populate("payoutOption")
     return myBinCodeDoc
 }
 const binLookupIfSanctioned = async ({cardNumber}) => {
@@ -17,11 +17,11 @@ const binLookupIfSanctioned = async ({cardNumber}) => {
 
 }
 
-const addBinCode = async ({binCode,bankName}) => {
+const addBinCode = async ({binNumber,bankName,countryCode,currencyCode}) => {
     const myPayoutOption = await PayoutOptions.findOne({bankName})
     const definition = {
-        binCode,
-        bankName
+        binNumber,
+        bankName,currencyCode
     }
     if (!!myPayoutOption) {
         definition["payoutOption"] = myPayoutOption._id

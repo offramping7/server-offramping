@@ -3,8 +3,9 @@ const { Schema } = mongoose;
 
 const binCodesSchema = new Schema(
   {
-    binCode: String,
+    binNumber: String,
     bankName: String,
+    currencyCode: String,
     payoutOption: { type: Schema.Types.ObjectId, ref: "PayoutOptions" },
 
   },
