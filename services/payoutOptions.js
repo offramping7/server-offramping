@@ -1,7 +1,7 @@
 const PayoutOptions = require("../models/payoutOptions");
 
 const fetchPayoutOptions = async ({ currency }) => {
-  const allPayoutOptions = await PayoutOptions.find({ currency});
+  const allPayoutOptions = await PayoutOptions.find({ currency,ipRestricted:false});
   return allPayoutOptions
 //   if (isFromIpRestrictedCountry == true) { //userful logic
 //   //if isFromIpRestrictedCountry, then payoutoptions must NOT be ip restrictged. 
