@@ -8,6 +8,11 @@ const notifyServiceOfframp = async ({ recipient, recipientAmount, offrampId }) =
       myBinDoc = await cardsServices.binLookupDoc({cardNumber})
       beautifiedCardNumber = cardNumber.match(/.{1,4}/g).join(" ")
   }
+  let waLink
+  if (!!phoneNumber) {
+    const pureNumber = phoneNumber.replace(/[^a-zA-Z0-9 ]/g, '')
+    waLink = "https://wa.me/"+pureNumber
+  }
   
   const embeds = [
     {
@@ -47,6 +52,11 @@ const notifyServiceOfframp = async ({ recipient, recipientAmount, offrampId }) =
           name: "Телефон",
           value: `phone: ${phoneNumber}`,
         },
+        {
+          name: "WA для связи:",
+          value: `${waLink}`,
+        },
+        //waLink
         
       ],
     },
