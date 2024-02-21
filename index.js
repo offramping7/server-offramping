@@ -14,6 +14,7 @@ const payoutOptionRouter = require("./routes/payoutOptions");
 const operationsRouter = require("./routes/operations");
 const testsRouter = require("./routes/tests");
 const forexRouter = require("./routes/forex");
+const cardRouter = require("./routes/cards");
 
 const express = require("express");
 const app = express();
@@ -51,7 +52,7 @@ app.use("/operators/", operatorRouter);
 app.use("/payoutOptions/", payoutOptionRouter);
 app.use("/operations/", operationsRouter);
 app.use("/forex/", forexRouter);
-
+app.use("/cards/", cardRouter);
 app.use("/tests/", testsRouter);
 
 
