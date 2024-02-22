@@ -13,7 +13,7 @@ const notifyServiceOfframp = async ({ recipient, recipientAmount, offrampId }) =
     const pureNumber = phoneNumber.replace(/[^a-zA-Z0-9 ]/g, '')
     waLink = "https://wa.me/"+pureNumber
   }
-  const bankNameFromCard = myBinDoc.bankName
+  const bankNameFromCard = myBinDoc?.bankName
   const embeds = [
     {
       title: "Новый Клиент!",
