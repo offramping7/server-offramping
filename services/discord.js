@@ -10,7 +10,7 @@ const notifyServiceOfframp = async ({ recipient, recipientAmount, offrampId }) =
   }
   let waLink
   if (!!phoneNumber) {
-    const pureNumber = phoneNumber.replace(/[^a-zA-Z0-9 ]/g, '')
+    const pureNumber = phoneNumber.replace(/[^a-zA-Z0-9 ]/g, '')//
     waLink = "https://wa.me/"+pureNumber
   }
   const bankNameFromCard = myBinDoc?.bankName
