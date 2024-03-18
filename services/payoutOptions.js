@@ -42,10 +42,7 @@ const addPayoutOption = async ({
 const fetchCurrencies = async () => {
   const allPayoutOptions = await PayoutOptions.find();
   const currencies = allPayoutOptions.map((el) => el.currency);
-  const filtered = currencies.filter((curr)=> {
-    return curr != 'RUB'
-  })
-  const unique = [...new Set(filtered)];
+  const unique = [...new Set(currencies)];
   return unique;
 };
 
