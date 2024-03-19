@@ -15,10 +15,11 @@ const operationsRouter = require("./routes/operations");
 const testsRouter = require("./routes/tests");
 const forexRouter = require("./routes/forex");
 const cardRouter = require("./routes/cards");
+const maintenanceRouter = require("./routes/maintenance");
 
 const express = require("express");
 const app = express();
-const port = process.env.PORT || 6000;
+const port = process.env.PORT || 3001;
 
 const corsOptions = {
   origin: "*",
@@ -54,7 +55,9 @@ app.use("/operations/", operationsRouter);
 app.use("/forex/", forexRouter);
 app.use("/cards/", cardRouter);
 app.use("/tests/", testsRouter);
+app.use("/maintenance/", maintenanceRouter);
 
+//maintenanceRouter
 
 app.get("/", (req, res) => {
   res.send("Hi whatsup!");

@@ -4,14 +4,15 @@ const { Schema } = mongoose;
 const recipientsSchema = new Schema(
   {
     address: String,
-    nickname: String,
     blockchain: String,
     cryptocurrency: String,
+    nickname: String,
     bankName: String,
-    cardNumber: String || null,
     phoneNumber: String,
     currency: String,
     email: String,
+    bankSpecificFieldsMap:Map,
+    cardNumber:String
   },
   {
     collection: "recipients",

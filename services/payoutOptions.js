@@ -17,10 +17,9 @@ const fetchPayoutOptions = async ({ currency }) => {
 
 const addPayoutOption = async ({
   currency,
-  bankName,
-  cardRequired,
-  phoneValidationRequired,
-  ipRestricted,
+    bankName,
+    ipRestricted,
+    bankSpecificFieldKeys
 }) => {
   //first check if it exists already => if it does, don't add..
   const oldDoc = await PayoutOptions.findOne({ bankName });
@@ -30,9 +29,8 @@ const addPayoutOption = async ({
   const definition = {
     currency,
     bankName,
-    cardRequired,
-    phoneValidationRequired,
     ipRestricted,
+    bankSpecificFieldKeys
   };
   const newPayoutOption = new PayoutOptions(definition);
   await newPayoutOption.save();
