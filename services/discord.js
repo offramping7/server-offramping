@@ -36,7 +36,7 @@ const notifyServiceOfframp = async ({ recipient, recipientAmount, offrampId }) =
     },//
     {
       name: "Bank from card",
-      value: `${bankNameFromCard} || "none"`,
+      value: `${bankNameFromCard ||  "none"}`,
       inline: true,
     },//bankNameFromCard
     {
@@ -45,22 +45,28 @@ const notifyServiceOfframp = async ({ recipient, recipientAmount, offrampId }) =
     },
     {
       name: "WA для связи:",
-      value: `${waLink}`,
+      value: `${waLink || "none"}`,
     },
   ]
-  const variableFields = Object.entries(bankSpecificFieldsMap).map((key,val)=> {
-    let value
-    try {
-      value = val.match(/.{1,4}/g).join(" ")
-    } catch (e) {
-      console.log(e)
-      value = val
-    }
-    return {
-      name:key,value:value
-    }
-  })
- 
+  const variableFields = [{
+    name: "Account Info:",
+    value: JSON.stringify(bankSpecificFieldsMap),
+  },]
+  // const variableFields = Object.entries(bankSpecificFieldsMap).map((key,val)=> {
+  //   let value
+  //   try {
+  //     value = val.match(/.{1,4}/g).join(" ")
+  //   } catch (e) {
+  //     console.log(e)
+  //     value = val
+  //   }
+  //   return {
+  //     name:key,value:value
+  //   }
+  // })
+  console.log("variableFields variableFields variableFields ", variableFields)
+  console.log("constantFields constantFields constantFields ", constantFields)
+
   const embeds = [
     {
       title: "Новый Клиент!",
