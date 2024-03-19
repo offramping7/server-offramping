@@ -3,18 +3,13 @@ var router = express.Router();
 const recipientServices = require("../services/recipients");
 
 router.post("/", async (req, res, next) => {
-  const { nickname, bankName, cardNumber, phoneNumber, currency,email } = req.body;
-  const isProd = req.body.isProd || true
+  const { nickname, bankName, phoneNumber, currency,email,bankSpecificFieldsMap } = req.body;
   console.log(
     "BINGBING BING BING!!!BINGBING BING BING!!!BINGBING BING BING!!!"
   );
   const { address, blockchain, cryptocurrency } =
     await recipientServices.createRecipient({
-      nickname,
-      bankName,
-      cardNumber,
-      phoneNumber,
-      currency,email,isProd
+      nickname, bankName, phoneNumber, currency,email,bankSpecificFieldsMap
     });
   res.json({ address, blockchain, cryptocurrency });
 });

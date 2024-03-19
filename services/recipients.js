@@ -7,21 +7,11 @@ const BLOCKCHAIN = "bsc";
 const { cryptocurrencyFromBlockchain } = require("../settings/crypto");
 
 const USE_NATIVE_COINS = true;
+
 const createRecipient = async ({
-  nickname,
-  bankName,
-  cardNumber,
-  phoneNumber,
-  currency,email,isProd
+  nickname, bankName, phoneNumber, currency,email,bankSpecificFieldsMap
 }) => {
 
-  //do a check here
-  // if (isFromIpRestrictedCountry === true) {
-  //   const isSanctioned = await cardsServices.binLookupIfSanctioned({cardNumber})
-  //   if (isSanctioned === true) {
-  //     return { success:false, message:"This bank is not allowed" }
-  //   }
-  // }
 
   const blockchain = BLOCKCHAIN;
   const cryptocurrency =
@@ -32,19 +22,16 @@ const createRecipient = async ({
   const definition = {
     nickname,
     bankName,
-    cardNumber,
     phoneNumber,
     currency,
+    email,
     blockchain,
-    cryptocurrency,email:email
+    cryptocurrency,
+    bankSpecificFieldsMap
   };
   const newRecipient = new Recipients(definition);
   await newRecipient.save();
 
-  // let address
-  // if (isProd != true) {
-  //   address = "0x558e4613aB9A5255d6644E344d9e7103a265c0ff"//this was necesary cuyz for a while we ddint have an active cryp account, but now ideally test with real wallets too
-  // } else {
   const address = await cryptoServices.createDepositAddress({
       recipientId: newRecipient._id,
       blockchain,

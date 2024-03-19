@@ -5,9 +5,8 @@ const payoutOptionsSchema = new Schema(
   {
     currency: String,
     bankName: String,
-    cardRequired: Boolean,
-    phoneValidationRequired: Boolean,
     ipRestricted: Boolean,
+    bankSpecificFieldKeys:[String]//default should be Card Number
   },
   {
     collection: "payoutOptions",

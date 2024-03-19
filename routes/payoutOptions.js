@@ -29,16 +29,14 @@ router.post("/createPayoutOption", async (req, res, next) => {
   const {
     currency,
     bankName,
-    cardRequired,
-    phoneValidationRequired,
     ipRestricted,
+    bankSpecificFieldKeys
   } = req.body;
   const result = await payoutOptionServices.addPayoutOption({
     currency,
     bankName,
-    cardRequired,
-    phoneValidationRequired,
     ipRestricted,
+    bankSpecificFieldKeys
   });
   res.json(result);
 });
