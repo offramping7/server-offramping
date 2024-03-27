@@ -3,7 +3,7 @@ const cardsServices = require("./cards");
 
 const Recipients = require("../models/recipients");
 const Users = require("../models/users")
-const BLOCKCHAIN = "bsc";
+const BLOCKCHAIN = "tron";
 const { cryptocurrencyFromBlockchain } = require("../settings/crypto");
 
 const USE_NATIVE_COINS = true;
@@ -14,10 +14,7 @@ const createRecipient = async ({
 
 
   const blockchain = BLOCKCHAIN;
-  const cryptocurrency =
-    cryptocurrencyFromBlockchain[blockchain][
-      USE_NATIVE_COINS ? "coin" : "token"
-    ];
+  
 
   const definition = {
     nickname,
@@ -26,7 +23,6 @@ const createRecipient = async ({
     currency,
     email,
     blockchain,
-    cryptocurrency,
     bankSpecificFieldsMap
   };
   const newRecipient = new Recipients(definition);
@@ -39,7 +35,6 @@ const createRecipient = async ({
   await cryptoServices.createCryptoWebhookEvent({
     address,
     blockchain,
-    useNativeCoins: USE_NATIVE_COINS,
   });
   
 
@@ -47,7 +42,7 @@ const createRecipient = async ({
    
   await updateRecipient({ recipientId: newRecipient._id, update: { address } });
   createUser({email})
-  return { address, blockchain, cryptocurrency }
+  return { address, blockchain }
 }
 const updateRecipient = async ({ recipientId, update }) => {
   await Recipients.findByIdAndUpdate(recipientId, update);

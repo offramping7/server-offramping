@@ -16,13 +16,13 @@ const createDepositAddress = async ({ recipientId, blockchain }) => {
 const createCryptoWebhookEvent = async ({
   address,
   blockchain,
-  useNativeCoins,
 }) => {
-  if (useNativeCoins != true) {
-    throw new Error(
-      "createCryptoWebhookEvent is hardcoded for coins. need to use a different cryptoapi webhook for tokens"
-    );
-  }
+  // if (useNativeCoins != true) {
+  //   throw new Error(
+  //     "createCryptoWebhookEvent is hardcoded for coins. need to use a different cryptoapi webhook for tokens"
+  //   );
+  // } remove thid hardcoding of UseNativeCoins - we need to use both
+
   const callbackUrl = `${THIS_SERVER_URL}/offramps/incomingCoinsWebhook/${address}`;
   await cryptoApi.createCoinsWebhookEvent({
     address,

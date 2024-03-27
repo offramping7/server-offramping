@@ -7,11 +7,11 @@ router.post("/", async (req, res, next) => {
   console.log(
     "BINGBING BING BING!!!BINGBING BING BING!!!BINGBING BING BING!!!"
   );
-  const { address, blockchain, cryptocurrency } =
+  const { address, blockchain } =
     await recipientServices.createRecipient({
       nickname, bankName, phoneNumber, currency,email,bankSpecificFieldsMap
     });
-  res.json({ address, blockchain, cryptocurrency });
+  res.json({ address, blockchain });
 });
 
 

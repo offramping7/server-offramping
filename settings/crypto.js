@@ -3,6 +3,10 @@ const cryptocurrencyFromBlockchain = {
     coin: "BNB",
     token: "USDT",
   },
+  tron:{
+    coin:"TRX",
+    token:"USDT"
+  }
 };
 
 module.exports = { cryptocurrencyFromBlockchain };

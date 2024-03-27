@@ -24,6 +24,10 @@ const cryptoApiWebhookReverseBlockchainNameConvention = {
 const OUR_FEE = 0.06;
 const SKIM_PROFIT = false
 
+const decodeChaingatewayAndServiceOfframp = async ({address,payload}) => {
+  //somehow understand if it's 
+  return serviceOfframp({address, payload})
+}
 const serviceOfframp = async ({ address, payload }) => {
   const eventName = payload.data.event; //should == ADDRESS_COINS_TRANSACTION_CONFIRMED
   const { transactionId, unit, amount, direction } = payload.data.item;
@@ -153,7 +157,7 @@ module.exports = {
   serviceOfframp,
   updateOfframp,
   findOfframpById,
-  fundingFinishedExtractProfit,
+  fundingFinishedExtractProfit,decodeChaingatewayAndServiceOfframp
 };
 
 // await createProfitAndCoinDumpRequest({address:fromAddress,blockchain})

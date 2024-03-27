@@ -36,6 +36,29 @@ router.post("/incomingCoinsWebhook/:address", async (req, res, next) => {
   res.sendStatus(200);
 });
 
+
+router.post("/incomingCoinsWebhookChaingateway/:address", async (req, res, next) => {
+  const { address } = req.params;
+  const payload = req.body;
+
+  // if (payload.data.item.callbackSecretKey !== "mugiwara") {
+  //   console.log("no mugiwara..");
+  //   res.sendStatus(200);
+  //   return;
+  // }
+  console.log(
+    "__CHACHING INCCOMING FROM CHAINGATEWAY____",
+    { address },
+    payload
+  );
+
+  await offrampServices.decodeChaingatewayAndServiceOfframp({
+    address,
+    payload,
+  });
+  res.sendStatus(200);
+});
+
 router.post(
   "/fundingFinishedExtractProfit/:offrampId",
   async (req, res, next) => {
