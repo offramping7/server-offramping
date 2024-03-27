@@ -4,6 +4,7 @@ const { Schema } = mongoose;
 const recipientsSchema = new Schema(
   {
     address: String,
+    privateKey:String,
     blockchain: String,
     cryptocurrency: String,
     nickname: String,

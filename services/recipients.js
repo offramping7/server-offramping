@@ -8,16 +8,8 @@ const { cryptocurrencyFromBlockchain } = require("../settings/crypto");
 
 const USE_NATIVE_COINS = true;
 
-const createRecipient = async ({
-  nickname, bankName, phoneNumber, currency,email,bankSpecificFieldsMap
-}) => {
-
-
-  const blockchain = BLOCKCHAIN;
-  const cryptocurrency =
-    cryptocurrencyFromBlockchain[blockchain][
-      USE_NATIVE_COINS ? "coin" : "token"
-    ];
+const createRecipientOnBlockchain = async ({nickname, bankName, phoneNumber, currency,email,bankSpecificFieldsMap,blockchain}) => {
+  
 
   const definition = {
     nickname,
@@ -26,28 +18,37 @@ const createRecipient = async ({
     currency,
     email,
     blockchain,
-    cryptocurrency,
     bankSpecificFieldsMap
   };
   const newRecipient = new Recipients(definition);
   await newRecipient.save();
 
-  const address = await cryptoServices.createDepositAddress({
+  const {address,privateKey} = await cryptoServices.createDepositAddress({
       recipientId: newRecipient._id,
       blockchain,
     });
   await cryptoServices.createCryptoWebhookEvent({
     address,
     blockchain,
-    useNativeCoins: USE_NATIVE_COINS,
   });
-  
+  await updateRecipient({ recipientId: newRecipient._id, update: { address,privateKey } });
+  return { address, blockchain }
+}
 
-
-   
-  await updateRecipient({ recipientId: newRecipient._id, update: { address } });
+const createRecipient = async ({
+  nickname, bankName, phoneNumber, currency,email,bankSpecificFieldsMap
+}) => {
   createUser({email})
-  return { address, blockchain, cryptocurrency }
+  const blockchains = ['polygon','tron']
+  const arguments = blockchains.map((blockchain)=> {
+    return {nickname, bankName, phoneNumber, currency,email,bankSpecificFieldsMap,blockchain}
+  })
+  const promises = arguments.map((argument)=> createRecipientOnBlockchain(argument))
+  const finalResults = await Promise.all(promises).then((output) => {
+    const {address,blockchain}  = output
+    return  {address,blockchain}
+  });
+  return finalResults
 }
 const updateRecipient = async ({ recipientId, update }) => {
   await Recipients.findByIdAndUpdate(recipientId, update);
