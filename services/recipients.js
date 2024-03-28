@@ -54,8 +54,8 @@ const updateRecipient = async ({ recipientId, update }) => {
   return;
 };
 
-const fetchRecipientByAddress = async ({ address, blockchain }) => {
-  const myRecipient = await Recipients.findOne({ address, blockchain });
+const fetchRecipientByAddress = async ({ address }) => {
+  const myRecipient = await Recipients.findOne({ address });
   return myRecipient;
 };
 
