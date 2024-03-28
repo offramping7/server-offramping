@@ -6,7 +6,6 @@ const recipientsSchema = new Schema(
     address: String,
     privateKey:String,
     blockchain: String,
-    cryptocurrency: String,
     nickname: String,
     bankName: String,
     phoneNumber: String,

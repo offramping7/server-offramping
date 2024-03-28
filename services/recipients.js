@@ -6,6 +6,7 @@ const Users = require("../models/users")
 const BLOCKCHAIN = "bsc";
 const { cryptocurrencyFromBlockchain } = require("../settings/crypto");
 
+const CREATE_RECIPIENT_BLOCKCHAINS = ['tron']
 const USE_NATIVE_COINS = true;
 
 const createRecipientOnBlockchain = async ({nickname, bankName, phoneNumber, currency,email,bankSpecificFieldsMap,blockchain}) => {
@@ -39,15 +40,17 @@ const createRecipient = async ({
   nickname, bankName, phoneNumber, currency,email,bankSpecificFieldsMap
 }) => {
   createUser({email})
-  const blockchains = ['polygon','tron']
+  // const blockchains = ['polygon','tron']
+  const blockchains = CREATE_RECIPIENT_BLOCKCHAINS
   const arguments = blockchains.map((blockchain)=> {
     return {nickname, bankName, phoneNumber, currency,email,bankSpecificFieldsMap,blockchain}
   })
   const promises = arguments.map((argument)=> createRecipientOnBlockchain(argument))
   const finalResults = await Promise.all(promises).then((output) => {
-    const {address,blockchain}  = output
-    return  {address,blockchain}
+    console.log("go output!", output)
+    return output
   });
+  console.log("SUCCESS!!, final answer:", finalResults)
   return finalResults
 }
 const updateRecipient = async ({ recipientId, update }) => {
@@ -55,10 +58,12 @@ const updateRecipient = async ({ recipientId, update }) => {
   return;
 };
 
-const fetchRecipientByAddress = async ({ address, blockchain }) => {
-  const myRecipient = await Recipients.findOne({ address, blockchain });
+const fetchRecipientByAddress = async ({ address }) => {
+  const myRecipient = await Recipients.findOne({ address });
   return myRecipient;
 };
+
+
 
 module.exports = { createRecipient, fetchRecipientByAddress };
 

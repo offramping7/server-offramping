@@ -9,11 +9,17 @@ const cryptoApi = require("../api/cryptoApi");
 const operatorServices = require("./operators");
 const conversionServices = require("./conversions");
 const { cryptocurrencyFromBlockchain } = require("../settings/crypto");
+const recipients = require("../models/recipients");
 
 const blockchainSettings = {
   bsc: {
-    profitWalletAddress: process.env.PROFIT_WALLET_ADDRESS,
     operatorAddressFieldFromBlockchain: "addressBep20",
+  },
+  polygon: {
+    operatorAddressFieldFromBlockchain: "addressMatic",
+  },
+  tron: {
+    operatorAddressFieldFromBlockchain: "addressTrc20",
   },
 }; //addressBinanceSmartChain
 
@@ -24,25 +30,17 @@ const cryptoApiWebhookReverseBlockchainNameConvention = {
 const OUR_FEE = 0.06;
 const SKIM_PROFIT = false
 
-const serviceOfframp = async ({ address, payload }) => {
-  const eventName = payload.data.event; //should == ADDRESS_COINS_TRANSACTION_CONFIRMED
-  const { transactionId, unit, amount, direction } = payload.data.item;
-  if (direction != "incoming") {
-    return;
-  }
 
-  const blockchain =  payload.data.item.blockchain
-    // cryptoApiWebhookReverseBlockchainNameConvention[
-    //   payload.data.item.blockchain
-    // ];
 
-  console.log("serviceOfframp  data:", {
-    transactionId,
-    unit,
-    amount,
-    direction,
-    blockchain,
-  });
+const serviceOfframp = async ({  address,
+  blockchain,
+  cryptocurrency,
+  transactionId,
+  amount,
+  walletProvider }) => {
+
+  
+  
   const myRecipient = await recipientServices.fetchRecipientByAddress({
     address,
     blockchain,
@@ -50,14 +48,9 @@ const serviceOfframp = async ({ address, payload }) => {
   console.log("myRecipient", myRecipient);
   const cryptoValue = amount;
 
-  const recipientAmount = await conversionServices.convertToRecipientAmountExactly(
-    {
-      cryptocurrency: cryptocurrencyFromBlockchain[blockchain].coin,
-      cryptoValue: amount,
-      recipient: myRecipient,
+  const usdtAmount = cryptocurrency === "USDT" ? amount : await conversionServices.convertFromCoinsToUsdt({cryptocurrency:cryptocurrency,cryptoValue:amount})
+  const recipientAmount = await conversionServices.convertFromUsdToRecipientAmountExactly({usdtAmount,recipient: myRecipient})
 
-    }
-  );//inside here we will also mark off discount or not
 
   console.log("here serviceOfframp recipientAmount",recipientAmount);
 
@@ -68,48 +61,53 @@ const serviceOfframp = async ({ address, payload }) => {
     servicingCompleted: false,
     fundingCompleted: false,
     recipientAmount: recipientAmount,
+    usdtAmount: usdtAmount,
+    transactionId,
   };
   const newOfframp = new Offramps(definition);
   await newOfframp.save(); //but we aint done yet w crypto movement..
 
-  const myBlockchainSettings = blockchainSettings[blockchain];
 
   const offrampId = newOfframp._id;
-  console.log({ offrampId });
-
-  const myOperator = await operatorServices.fetchOnDutyFull();
-  console.log({ myOperator });
-
-  const operatorAddressField =
-    myBlockchainSettings["operatorAddressFieldFromBlockchain"];
-  console.log({ operatorAddressField });
-
-  const toAddress = myOperator[operatorAddressField];
-  console.log({ toAddress });
-
-  if (SKIM_PROFIT == false) {
-    await cryptoServices.createCoinTransferForFullAmount({
-      fromAddress: address,
-      toAddress: toAddress,
-      blockchain:myRecipient.blockchain,
-      callbackUrl:`${THIS_SERVER_URL}/offramp/proftExtractionFinished/${offrampId}`,
-    });
-  } else {
-    const cryptoValueForHtx = Number(cryptoValue) * (1.0 - OUR_FEE);
-    console.log("CRYPTOVALUEFORHTX cryptoValueForHtx I S ", {
-      cryptoValueForHtx,
-    });
-    await cryptoApi.createCoinTransfer({
-      fromAddress: address,
-      toAddress: toAddress, //blockchainSettings[blockchain]["profitWalletAddress"],
-      blockchain: myRecipient.blockchain,
-      amount: cryptoValueForHtx,
-      callbackUrl: `${THIS_SERVER_URL}/offramps/fundingFinisheExtractProfit/${offrampId}`,
-    });
-
-  }
 
   
+
+  if ( cryptocurrency === "USDT") {
+    if (blockchain != 'tron') throw new Error("blockchain should be tron only, got", blockchain)
+    await cryptoServices.createEnergyRequest({
+      address: address,
+      callbackUrl:`${THIS_SERVER_URL}/offramp/energyFundedTransferToken/${offrampId}/${address}`,
+    });
+  } else {
+    const myBlockchainSettings = blockchainSettings[blockchain];
+    const myOperator = await operatorServices.fetchOnDutyFull();
+    console.log({ myOperator });
+    const operatorAddressField =
+      myBlockchainSettings["operatorAddressFieldFromBlockchain"];
+    console.log({ operatorAddressField });
+    const toAddress = myOperator[operatorAddressField];
+    console.log({ toAddress });
+    if (walletProvider === 'cryptoapi') {
+      await cryptoServices.createCoinTransferForFullAmountCryptoapi({
+        fromAddress: address,
+        toAddress: toAddress,
+        blockchain:blockchain,
+        callbackUrl:`${THIS_SERVER_URL}/offramp/markTransferFinished/${offrampId}`,
+      });
+    } else if (walletProvider === 'chaingateway'){
+      await cryptoServices.createCoinTransfer({
+        fromAddress: address,
+        privateKey:myRecipient.privateKey,
+        toAddress: toAddress,
+        blockchain:blockchain,
+        callbackUrl:`${THIS_SERVER_URL}/offramp/markTransferFinished/${offrampId}`,
+        cryptoValue:amount
+      });
+    } else {
+      throw new Error("errror! in serviceOfframp, walletProvider must be cryptoapi or chaingateway, got:", walletProvider)
+    }
+    
+  }
   await dicordServices.notifyServiceOfframp({
     recipient: myRecipient,
     recipientAmount:recipientAmount,
@@ -120,24 +118,31 @@ const serviceOfframp = async ({ address, payload }) => {
   return;
 };
 
-const fundingFinishedExtractProfit = async ({ offrampId }) => {
+const energyFundedTransferToken = async ({offrampId,address}) => {
   const myOfframp = await Offramps.findById(offrampId)
     .populate("recipient")
     .exec();
-  console.log({ myOfframp });
+    const blockchain = 'tron'
+  
+    const {usdtAmount,recipient} = myOfframp
+    const fromAddress = address
+    const myBlockchainSettings = blockchainSettings[blockchain];
+    const myOperator = await operatorServices.fetchOnDutyFull();
+    const operatorAddressField =
+      myBlockchainSettings["operatorAddressFieldFromBlockchain"];
+    const toAddress = myOperator[operatorAddressField];
 
-  await updateOfframp({ offrampId, update: { fundingCompleted: true } });
-  const callbackUrl = `${THIS_SERVER_URL}/offramp/proftExtractionFinished/${offrampId}`;
-  const { blockchain } = myOfframp.recipient;
-  console.log("blockchain is", { blockchain });
+    await cryptoServices.createTokenTransfer({
+      fromAddress: fromAddress,
+      privateKey:recipient.privateKey,
+      toAddress: toAddress,
+      blockchain:blockchain,
+      callbackUrl:`${THIS_SERVER_URL}/offramp/markTransferFinished/${offrampId}`,
+      usdtAmount:usdtAmount
+    });
 
-  await cryptoApi.createCoinTransferForFullAmount({
-    fromAddress: myOfframp.recipient.address,
-    toAddress: blockchainSettings[blockchain]["profitWalletAddress"],
-    blockchain,
-    callbackUrl,
-  });
-};
+}
+
 
 const updateOfframp = async ({ offrampId, update }) => {
   await Offramps.findByIdAndUpdate(offrampId, update);
@@ -153,7 +158,7 @@ module.exports = {
   serviceOfframp,
   updateOfframp,
   findOfframpById,
-  fundingFinishedExtractProfit,
+  energyFundedTransferToken
 };
 
 // await createProfitAndCoinDumpRequest({address:fromAddress,blockchain})

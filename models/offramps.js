@@ -15,6 +15,7 @@ const offrampsSchema = new Schema(
     orderNumber: String,
     paymentProofUrl: String,
     recipientAmount: Number,
+    transactionId:String,
   },
   {
     collection: "offramps",

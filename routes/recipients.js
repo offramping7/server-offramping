@@ -14,6 +14,16 @@ router.post("/", async (req, res, next) => {
   res.json(arrayOfAddressesAndBchains);
 });
 
+router.get("/address/:address", async (req, res, next) => {
+  const { address } = req.params;
+  
+  const result =
+    await recipientServices.fetchRecipientByAddress({
+      address
+    });
+  res.json(result);
+});
+
 
 // router.post("/testCreate", async (req, res, next) => {
 //   const { nickname, bankName, cardNumber, phoneNumber, currency,email } = req.body;

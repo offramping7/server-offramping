@@ -41,30 +41,27 @@ const createWebhookEvent = async ({blockchain,address,callbackUrl}) => {
     const headers = {
         "Authorization":CHAINGATEWAY_API_KEY,Accept:"application/json"
     }
-    const payload = { url: callbackUrl}
+    const payload = { url: callbackUrl, to:address}
     if (blockchain === 'polygon') {
         payload['type'] = 'ETH'
-        payload['to'] = address
     } 
-    if (blockchain === 'tron') {
-        payload['from'] = address
-    }
+
     return axios.post(url,payload,{headers}).then((res)=>res.data)
 }
 //sendTrx on trong => {to,amount,privateKey}
 //sendTrx on polygon => {from,to,amount,password,gas}
-const createCoinTransfer = async ({blockchain,fromAddress,toAddress,amount,privateKey}) => {
+const createCoinTransfer = async ({blockchain,fromAddress,toAddress,cryptoValue,privateKey}) => {
     // const myBlockchain = chaingatewayReverseBlockchainNameConvention[blockchain]
     if (!['polygon','tron'].includes(blockchain)) throw new Error("blockchain must be either polygon or tron, got: ", blockchain)
     const payload = blockchain === 'tron' ? 
     {  
         to: toAddress,
-        amount: amount,
+        amount: cryptoValue,
         privatekey: privateKey
     } : {
       from:fromAddress,
       to:toAddress,
-      amount:amount,
+      amount:cryptoValue,
       password:privateKey,
       gas:0.1
      }
@@ -75,12 +72,16 @@ const createCoinTransfer = async ({blockchain,fromAddress,toAddress,amount,priva
     const headers = {
         "Authorization":CHAINGATEWAY_API_KEY,Accept:"application/json"
     }
-    return axios.post(url,payload,{headers}).then((res)=>res.data)
+    return axios.post(url,payload,{headers}).then((res)=>res.data).catch((err)=>{
+        console.log("createCoinTransfer err.response", err.response)
+        console.log("createCoinTransfer err.response.data", err.response?.data)
+
+    })
 
 }
 
 
-const createTokenTransferTrx = async ({blockchain,toAddress,amount,privateKey,fromAddress}) => {
+const createTokenTransferTrx = async ({blockchain,toAddress,usdtAmount,privateKey,fromAddress}) => {
     if (blockchain !== 'tron') throw new Error("this createTokenTransfer is hardcoded for trx only, got:", blockchain)
 
     const tokenStandard = tokenStandardFromBlockchain[blockchain]
@@ -97,8 +98,8 @@ const createTokenTransferTrx = async ({blockchain,toAddress,amount,privateKey,fr
         "from": fromAddress,
         "to": toAddress,
         "privatekey": privateKey,
-        "contractaddress": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
-        "amount": amount
+        "contractaddress": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",//TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t is for USDT
+        "amount": usdtAmount
       }
 
       return axios.post(url,payload,{headers}).then((res)=>res.data)
