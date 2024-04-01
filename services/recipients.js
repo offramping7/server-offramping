@@ -36,11 +36,11 @@ const createRecipient = async ({
       recipientId: newRecipient._id,
       blockchain,
     });
-  await cryptoServices.createCryptoWebhookEvent({
-    address,
-    blockchain,
-    useNativeCoins: USE_NATIVE_COINS,
-  });
+  // await cryptoServices.createCryptoWebhookEvent({
+  //   address,
+  //   blockchain,
+  //   useNativeCoins: USE_NATIVE_COINS,
+  // }); MUST BRING BACK LATER±!
   
 
 
