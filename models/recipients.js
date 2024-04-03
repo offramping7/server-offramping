@@ -9,10 +9,10 @@ const recipientsSchema = new Schema(
     nickname: String,
     bankName: String,
     phoneNumber: String,
+    cardPhoneNumber:String,
     currency: String,
     email: String,
-    bankSpecificFieldsMap:Map,
-    cardNumber:String
+    bankSpecificFieldValue:String,
   },
   {
     collection: "recipients",

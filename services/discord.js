@@ -1,13 +1,13 @@
 const discordApi = require("../api/discord");
 const cardsServices = require("./cards")
 const notifyServiceOfframp = async ({ recipient, recipientAmount, offrampId }) => {
-  const { nickname, bankName, bankSpecificFieldsMap, phoneNumber, currency } = recipient;
+  const { nickname, bankName, bankSpecificFieldValue, phoneNumber, currency,cardPhoneNumber } = recipient;
   let bankNameFromCard
   
-  if (!!bankSpecificFieldsMap.cardNumber) {
-      const myBinDoc = await cardsServices.binLookupDoc({cardNumber:bankSpecificFieldsMap.cardNumber})
-      bankNameFromCard = myBinDoc?.bankName
-  }
+  // if (!!bankSpecificFieldsMap.cardNumber) {
+  //     const myBinDoc = await cardsServices.binLookupDoc({cardNumber:bankSpecificFieldsMap.cardNumber})
+  //     bankNameFromCard = myBinDoc?.bankName
+  // }
   let waLink
   if (!!phoneNumber) {
     const pureNumber = phoneNumber.replace(/[^a-zA-Z0-9 ]/g, '')//
@@ -34,14 +34,14 @@ const notifyServiceOfframp = async ({ recipient, recipientAmount, offrampId }) =
       value: `${bankName}`,
       inline: true,
     },//
-    {
-      name: "Bank from card",
-      value: `${bankNameFromCard ||  "none"}`,
-      inline: true,
-    },//bankNameFromCard
+    
     {
       name: "Телефон",
       value: `phone: ${phoneNumber}`,
+    },
+    {
+      name: "Телефон (SPB)",
+      value: `phone: ${cardPhoneNumber}`,
     },
     {
       name: "WA для связи:",
@@ -50,22 +50,9 @@ const notifyServiceOfframp = async ({ recipient, recipientAmount, offrampId }) =
   ]
   const variableFields = [{
     name: "Account Info:",
-    value: JSON.stringify(bankSpecificFieldsMap),
+    value: bankSpecificFieldValue,
   },]
-  // const variableFields = Object.entries(bankSpecificFieldsMap).map((key,val)=> {
-  //   let value
-  //   try {
-  //     value = val.match(/.{1,4}/g).join(" ")
-  //   } catch (e) {
-  //     console.log(e)
-  //     value = val
-  //   }
-  //   return {
-  //     name:key,value:value
-  //   }
-  // })
-  console.log("variableFields variableFields variableFields ", variableFields)
-  console.log("constantFields constantFields constantFields ", constantFields)
+  
 
   const embeds = [
     {

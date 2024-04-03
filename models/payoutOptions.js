@@ -6,7 +6,8 @@ const payoutOptionsSchema = new Schema(
     currency: String,
     bankName: String,
     ipRestricted: Boolean,
-    bankSpecificFieldKeys:[String],//default should be Card Number
+    // bankSpecificFieldKeys:[String],//default should be Card Number
+    bankSpecificFieldKey:String,
     mustBeVerified:{type:Boolean,default:false}
   },
   {
