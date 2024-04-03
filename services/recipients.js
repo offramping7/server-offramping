@@ -9,7 +9,7 @@ const { cryptocurrencyFromBlockchain } = require("../settings/crypto");
 const USE_NATIVE_COINS = true;
 
 const createRecipient = async ({
-  nickname, bankName, phoneNumber, currency,email,bankSpecificFieldsMap
+  nickname, bankName, phoneNumber, currency,email,bankSpecificFieldValue
 }) => {
 
 
@@ -27,7 +27,7 @@ const createRecipient = async ({
     email,
     blockchain,
     cryptocurrency,
-    bankSpecificFieldsMap
+    bankSpecificFieldValue
   };
   const newRecipient = new Recipients(definition);
   await newRecipient.save();
