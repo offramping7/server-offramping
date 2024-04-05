@@ -2,14 +2,13 @@ const cryptoServices = require("./crypto");
 const cardsServices = require("./cards");
 
 const Recipients = require("../models/recipients");
-const Users = require("../models/users")
 const BLOCKCHAIN = "bsc";
 const { cryptocurrencyFromBlockchain } = require("../settings/crypto");
 
 const USE_NATIVE_COINS = true;
 
 const createRecipient = async ({
-  nickname, bankName, phoneNumber, currency,email,bankSpecificFieldValue
+  nickname, bankName, phoneNumber, currency,bankSpecificFieldValue
 }) => {
 
 
@@ -24,7 +23,6 @@ const createRecipient = async ({
     bankName,
     phoneNumber,
     currency,
-    email,
     blockchain,
     cryptocurrency,
     bankSpecificFieldValue
@@ -46,7 +44,6 @@ const createRecipient = async ({
 
    
   await updateRecipient({ recipientId: newRecipient._id, update: { address } });
-  createUser({email})
   return { address, blockchain, cryptocurrency }
 }
 const updateRecipient = async ({ recipientId, update }) => {
@@ -61,14 +58,5 @@ const fetchRecipientByAddress = async ({ address }) => {
 
 module.exports = { createRecipient, fetchRecipientByAddress };
 
-
-const createUser = async ({email}) => {
-  const definition = {
-    email,active:false
-  }
-  const newUser = new Users(definition)
-  await newUser.save()
-  return
-}
 
 //must always have at least one be the default withdrawalAddress, NEVER EVER have situation where it is not the case
