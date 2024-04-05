@@ -11,7 +11,6 @@ const recipientsSchema = new Schema(
     phoneNumber: String,
     cardPhoneNumber:String,
     currency: String,
-    email: String,
     bankSpecificFieldValue:String,
   },
   {

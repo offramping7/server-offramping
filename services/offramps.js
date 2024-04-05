@@ -1,7 +1,6 @@
 const recipientServices = require("./recipients");
 const dicordServices = require("./discord");
 const Offramps = require("../models/offramps");
-const Users = require("../models/users")
 
 const cryptoServices = require("./crypto");
 const { THIS_SERVER_URL } = require("../settings/baseUrls");
@@ -116,7 +115,6 @@ const serviceOfframp = async ({ address, payload }) => {
     offrampId: newOfframp._id,
   });
 
-  await Users.findOneAndUpdate({email:myRecipient.email},{active:true})
   return;
 };
 

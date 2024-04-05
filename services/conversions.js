@@ -1,6 +1,5 @@
 const coinmarketcapApi = require("../api/coinmarketcap");
 const forexApi = require("../api/forex");
-const Users = require("../models/users")
 const Forex = require("../models/forex")
 
 const { OUR_FEE,INDIRIM } = require("../settings/fees");
@@ -10,15 +9,7 @@ const convertToRecipientAmountExactly = async ({
   cryptocurrency,
   recipient,
 }) => {
-  //assume that the fee was 0.03?
-
-  //check if first for email
-  const {email} = recipient
-  const {active} = await Users.findOne({email})
-
-  //
-
-  const TOTAL_FEE =  active === false ? OUR_FEE-INDIRIM : OUR_FEE
+  const TOTAL_FEE =  OUR_FEE
 
 
   const resData = await coinmarketcapApi.fetchPrice({ cryptocurrency });
