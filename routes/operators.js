@@ -21,6 +21,13 @@ router.post("/makeOnDuty/:nickname", async (req, res, next) => {
   res.sendStatus(200);
 });
 
+
+  router.get("/fetchOnDutyFull", async (req, res, next) => {
+    const result = await operatorServices.fetchOnDutyFull();
+    res.json(result);
+  });
+  
+
 router.get("/fetchOnDuty", async (req, res, next) => {
   const result = await operatorServices.fetchOnDuty();
   res.json(result);
