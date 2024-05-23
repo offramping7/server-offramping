@@ -1,17 +1,17 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const binCodesSchema = new Schema(
+const banksSchema = new Schema(
   {
-    binNumber: String,
+    currency: String,
     bankName: String,
-    currencyCode: String,
+    ipRestricted: {type:Boolean,default:false},
   },
   {
-    collection: "binCodes",
+    collection: "banks",
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model("BinCodes", binCodesSchema);
+module.exports = mongoose.model("Banks", banksSchema);
 //one payout opti on as a giant list, applicable to each

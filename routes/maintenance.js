@@ -15,4 +15,16 @@ router.post("/modernizeAllRecipients", async (req, res, next) => {
     res.status(200).send(); 
   });
 
+router.post("/makeBanks", async (req, res, next) => {
+    
+    await maintenanceServices.makeBanks();
+    res.json();//createDepositAddress
+  });//createCoinTransfer
+
+
+router.post("/addNewBin", async (req, res, next) => {
+    const {binNumber,bankName} = req.body
+    const result = await maintenanceServices.addNewBin({binNumber,bankName});
+    res.json(result);//createDepositAddress
+  });//createCoinTransfer
 module.exports = router;
