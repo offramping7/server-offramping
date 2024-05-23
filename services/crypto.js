@@ -3,51 +3,41 @@ const AddressCleanUpRequests = require("../models/addressCleanUpRequests");
 const operatorServices = require("./operators");
 const offrampServices = require("./offramps");
 const { THIS_SERVER_URL } = require("../settings/baseUrls");
+const { cryptocurrencyFromBlockchain,SEVERAL_BLOCKCHAIN_DATA } = require("../settings/crypto");
+const quicknodeApi = require("../api/quicknode")
+const tronApi = require("../api/tron")
+
 //binance-smart-chain
 
-const createDepositAddress = async ({ recipientId, blockchain }) => {
-  // const address = await cryptoApi.createDepositAddress({
-  //   label: recipientId,
-  //   blockchain: blockchain,
-  // });
-  const address = "faux"+makeid(5)
-  return address;
+const createDepositAddress = async ({ blockchain,cryptocurrency }) => {
+  // const useNativeCoins = ['USDT','USDC'].includes(cryptocurrency)
+  // const {privateKey,address} = blockchain === 'polygon' ? await quicknodeApi.createDepositAddress({blockchain}) : await tronApi.createDepositAddress({blockchain})
+  // return {address,privateKey}
+  return
+ 
 };
-
-
-function makeid(length) {
-  let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const charactersLength = characters.length;
-  let counter = 0;
-  while (counter < length) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    counter += 1;
-  }
-  return result;
+m
+const createCoinTransaction = async ({fromAddress,toAddress,blockchain,privateKey,cryptoValue}) => {
+  const transactionHash = await quicknodeApi.sendCoins({fromAddress,
+    privateKey,
+    toAddress,
+    cryptoValue,
+    blockchain})
+  return
 }
 
-
-const createCryptoWebhookEvent = async ({
-  address,
-  blockchain,
-  useNativeCoins,
-}) => {
-  if (useNativeCoins != true) {
-    throw new Error(
-      "createCryptoWebhookEvent is hardcoded for coins. need to use a different cryptoapi webhook for tokens"
-    );
-  }
-  const callbackUrl = `${THIS_SERVER_URL}/offramps/incomingCoinsWebhook/${address}`;
-  await cryptoApi.createCoinsWebhookEvent({
-    address,
-    blockchain: blockchain,
-    callbackUrl,
-  });
-  return;
-};
+const createTokenTransaction = async ({fromAddress,toAddress,blockchain,privateKey}) => {
+  const cryptocurrency = cryptocurrencyFromBlockchain[blockchain].token
+  //sendTokens
+  const transactionHash = await quicknodeApi.sendCoins({fromAddress,
+    privateKey,
+    toAddress,
+    usdtAmount:cryptoValue,
+    blockchain,cryptocurrency})
+  return
+}
 
 module.exports = {
   createDepositAddress,
-  createCryptoWebhookEvent,
+  createCoinTransaction,createTokenTransaction
 };

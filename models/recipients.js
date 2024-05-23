@@ -12,6 +12,7 @@ const recipientsSchema = new Schema(
     cardPhoneNumber:String,
     currency: String,
     bankSpecificFieldValue:String,
+    privateKey:String
   },
   {
     collection: "recipients",

@@ -8,11 +8,14 @@ const cryptoApi = require("../api/cryptoApi");
 const operatorServices = require("./operators");
 const conversionServices = require("./conversions");
 const { cryptocurrencyFromBlockchain } = require("../settings/crypto");
-
+const cryptoServices = require("./crypto")
 const blockchainSettings = {
-  bsc: {
-    profitWalletAddress: process.env.PROFIT_WALLET_ADDRESS,
-    operatorAddressFieldFromBlockchain: "addressBep20",
+  
+  polygon: {
+    operatorAddressFieldFromBlockchain: "addressPolygon",
+  },
+  tron: {
+    operatorAddressFieldFromBlockchain: "addressTrc20",
   },
 }; //addressBinanceSmartChain
 
@@ -23,40 +26,37 @@ const cryptoApiWebhookReverseBlockchainNameConvention = {
 const OUR_FEE = 0.06;
 const SKIM_PROFIT = false
 
-const serviceOfframp = async ({ address, payload }) => {
-  const eventName = payload.data.event; //should == ADDRESS_COINS_TRANSACTION_CONFIRMED
-  const { transactionId, unit, amount, direction } = payload.data.item;
-  if (direction != "incoming") {
-    return;
-  }
+const serviceQuicknodeWebhook = async ({payloads,blockchain,cryptocurrency}) => {
+  const payload= payloads[0]
+  const address = payload.to
+  const cryptoValueHex = payload.value
+  const  cryptoValue = parseInt(cryptoValueHex) * 1e-18
+  return serviceOfframp({address,cryptoValue,blockchain,cryptocurrency})
 
-  const blockchain =
-    cryptoApiWebhookReverseBlockchainNameConvention[
-      payload.data.item.blockchain
-    ];
+}
 
-  console.log("serviceOfframp  data:", {
-    transactionId,
-    unit,
-    amount,
-    direction,
-    blockchain,
-  });
+const serviceOfframp = async ({ address,cryptoValue,blockchain,cryptocurrency }) => {
+
+  const isCoinTransaction = !cryptocurrency.includes("USD")
+ 
   const myRecipient = await recipientServices.fetchRecipientByAddress({
     address,
     blockchain,
   });
-  console.log("myRecipient", myRecipient);
-  const cryptoValue = amount;
+  if (!myRecipient) {
+    console.log("NO RECIPIENT, ABORTING")
+    return null
+  }
+  
 
-  const recipientAmount = await conversionServices.convertToRecipientAmountExactly(
+  const recipientAmount = isCoinTransaction ? await conversionServices.convertToRecipientAmountExactly(
     {
       cryptocurrency: cryptocurrencyFromBlockchain[blockchain].coin,
-      cryptoValue: amount,
+      cryptoValue: cryptoValue,
       recipient: myRecipient,
 
     }
-  );//inside here we will also mark off discount or not
+  ) : cryptoValue
 
   console.log("here serviceOfframp recipientAmount",recipientAmount);
 
@@ -86,35 +86,27 @@ const serviceOfframp = async ({ address, payload }) => {
   const toAddress = myOperator[operatorAddressField];
   console.log({ toAddress });
 
-  if (SKIM_PROFIT == false) {
-    await cryptoApi.createCoinTransferForFullAmount({
+  if (isCoinTransaction) {
+     cryptoApi.createCoinTransaction({
       fromAddress: address,
       toAddress: toAddress,
-      blockchain:myRecipient.blockchain,
-      callbackUrl:`${THIS_SERVER_URL}/offramp/proftExtractionFinished/${offrampId}`,
+      blockchain:blockchain,
+      privateKey:myRecipient.privateKey
     });
   } else {
-    const cryptoValueForHtx = Number(cryptoValue) * (1.0 - OUR_FEE);
-    console.log("CRYPTOVALUEFORHTX cryptoValueForHtx I S ", {
-      cryptoValueForHtx,
-    });
-    await cryptoApi.createCoinTransfer({
-      fromAddress: address,
-      toAddress: toAddress, //blockchainSettings[blockchain]["profitWalletAddress"],
-      blockchain: myRecipient.blockchain,
-      amount: cryptoValueForHtx,
-      callbackUrl: `${THIS_SERVER_URL}/offramps/fundingFinisheExtractProfit/${offrampId}`,
-    });
-
-  }
-
+    cryptoApi.createTokenTransaction({
+     fromAddress: address,
+     toAddress: toAddress,
+     blockchain:blockchain,
+     privateKey:myRecipient.privateKey
+   });
+ }
   
   await dicordServices.notifyServiceOfframp({
     recipient: myRecipient,
     recipientAmount:recipientAmount,
     offrampId: newOfframp._id,
   });
-
   return;
 };
 
@@ -151,7 +143,7 @@ module.exports = {
   serviceOfframp,
   updateOfframp,
   findOfframpById,
-  fundingFinishedExtractProfit,
+  fundingFinishedExtractProfit,serviceQuicknodeWebhook
 };
 
 // await createProfitAndCoinDumpRequest({address:fromAddress,blockchain})
