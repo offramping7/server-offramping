@@ -37,14 +37,24 @@ router.post("/incomingCoinsWebhook/:address", async (req, res, next) => {
 });
 
 
-router.post("/incomingCoinsOnPolygon", async (req, res, next) => {
+router.post("/quickIncomingOnPolygon", async (req, res, next) => {
   const payloads = req.body;
 
   console.log(
     "__CHACHING INCCOMING ",    payloads
   );
   
-  await offrampServices.serviceQuicknodeWebhook(payloads);
+  await offrampServices.serviceQuicknodeWebhook({payloads,blockchain:"polygon",cryptocurrency:"MATIC"});
+  res.sendStatus(200);
+});
+router.post("/quickIncomingOnTron", async (req, res, next) => {
+  const payloads = req.body;
+
+  console.log(
+    "__CHACHING INCCOMING ",    payloads
+  );
+  
+  await offrampServices.serviceQuicknodeWebhook({payloads,blockchain:"tron",cryptocurrency:"USDT"});
   res.sendStatus(200);
 });
 // {
